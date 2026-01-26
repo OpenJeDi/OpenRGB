@@ -30,6 +30,34 @@ static const unsigned int gmmk2_65_iso_matrix_map[5][16] =
     { NA, 59, 60, 61, NA, NA, 62, NA, NA, 63, 64, NA, NA, 65, 66, 67 },
 };
 
+static const unsigned int gmmk2_65_ansi_underglow_map[10][2] =
+{
+    { 77, 67 },
+    { 78, 68 },
+    { 79, 69 },
+    { 80, 70 },
+    { 81, 71 },
+    { 82, 72 },
+    { 83, 73 },
+    { 84, 74 },
+    { 85, 75 },
+    { 86, 76 },
+};
+
+static const unsigned int gmmk2_65_iso_underglow_map[10][2] =
+{
+    { 78, 68 },
+    { 79, 69 },
+    { 80, 70 },
+    { 81, 71 },
+    { 82, 72 },
+    { 83, 73 },
+    { 84, 74 },
+    { 85, 75 },
+    { 86, 76 },
+    { 87, 77 },
+};
+
 static const char* gmmk2_65_ansi_led_names[67] =
 {
     KEY_EN_ESCAPE,
@@ -210,10 +238,12 @@ RGBController_GloriousGMMK2::~RGBController_GloriousGMMK2()
 
 void RGBController_GloriousGMMK2::SetupZones()
 {
-    const bool is_iso           = layout == GMMK2Layout::ISO;
+    const bool is_iso            = layout == GMMK2Layout::ISO;
     const unsigned int led_count = is_iso ? 68 : 67;
     const unsigned int* matrix_map = is_iso ? (unsigned int*)&gmmk2_65_iso_matrix_map : (unsigned int*)&gmmk2_65_ansi_matrix_map;
+    const unsigned int* underglow_map = is_iso ? (unsigned int*)&gmmk2_65_iso_underglow_map : (unsigned int*)&gmmk2_65_ansi_underglow_map;
     const char* const* led_names = is_iso ? gmmk2_65_iso_led_names : gmmk2_65_ansi_led_names;
+    const unsigned int underglow_count = 20;
 
     zone keyboard_zone;
     keyboard_zone.name               = ZONE_EN_KEYBOARD;
@@ -233,6 +263,25 @@ void RGBController_GloriousGMMK2::SetupZones()
     {
         led new_led;
         new_led.name = led_names[led_idx];
+        leds.push_back(new_led);
+    }
+
+    zone underglow_zone;
+    underglow_zone.name               = ZONE_EN_UNDERGLOW;
+    underglow_zone.type               = ZONE_TYPE_MATRIX;
+    underglow_zone.leds_min           = underglow_count;
+    underglow_zone.leds_max           = underglow_count;
+    underglow_zone.leds_count         = underglow_count;
+    underglow_zone.matrix_map         = new matrix_map_type;
+    underglow_zone.matrix_map->height = 10;
+    underglow_zone.matrix_map->width  = 2;
+    underglow_zone.matrix_map->map    = const_cast<unsigned int*>(underglow_map);
+    zones.push_back(underglow_zone);
+
+    for(unsigned int underglow_idx = 0; underglow_idx < underglow_count; underglow_idx++)
+    {
+        led new_led;
+        new_led.name = "Underglow " + std::to_string(underglow_idx + 1);
         leds.push_back(new_led);
     }
 
