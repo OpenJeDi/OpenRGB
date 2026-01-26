@@ -12,10 +12,16 @@
 #include "RGBController.h"
 #include "GloriousGMMK2Controller.h"
 
+enum class GMMK2Layout
+{
+    ANSI,
+    ISO,
+};
+
 class RGBController_GloriousGMMK2 : public RGBController
 {
 public:
-    RGBController_GloriousGMMK2(GloriousGMMK2Controller* controller_ptr);
+    RGBController_GloriousGMMK2(GloriousGMMK2Controller* controller_ptr, GMMK2Layout layout);
     ~RGBController_GloriousGMMK2();
 
     void SetupZones() override;
@@ -29,6 +35,5 @@ public:
 
 private:
     GloriousGMMK2Controller* controller;
-
-    std::vector<unsigned int> flat_matrix_map;
+    GMMK2Layout               layout;
 };

@@ -13,12 +13,13 @@
 #include "RGBController_GloriousGMMK2.h"
 #include "LogManager.h"
 
-#define GLORIOUS_VID                     0x320F
-#define GLORIOUS_GMMK2_65_ANSI_PID       0x5045
-#define GLORIOUS_GMMK2_FEATURE_USAGE_PAGE 0xFF01
-#define GLORIOUS_GMMK2_FEATURE_USAGE      0x0001
-#define GLORIOUS_GMMK2_OUTPUT_USAGE_PAGE  0xFF00
-#define GLORIOUS_GMMK2_OUTPUT_USAGE       0xFF00
+#define GLORIOUS_VID                        0x320F
+#define GLORIOUS_GMMK2_65_ANSI_PID          0x5045
+#define GLORIOUS_GMMK2_65_ISO_PID           0x504A
+#define GLORIOUS_GMMK2_FEATURE_USAGE_PAGE   0xFF01
+#define GLORIOUS_GMMK2_FEATURE_USAGE        0x0001
+#define GLORIOUS_GMMK2_OUTPUT_USAGE_PAGE    0xFF00
+#define GLORIOUS_GMMK2_OUTPUT_USAGE         0xFF00
 
 static hid_device* FindOutputInterface(const hid_device_info* info)
 {
@@ -48,6 +49,7 @@ void DetectGloriousGMMK2(hid_device_info* info, const std::string& /*name*/)
     if(feature_dev)
     {
         hid_device* output_dev = FindOutputInterface(info);
+        GMMK2Layout layout     = (info->product_id == GLORIOUS_GMMK2_65_ISO_PID) ? GMMK2Layout::ISO : GMMK2Layout::ANSI;
 
         if(output_dev == nullptr)
         {
@@ -55,10 +57,11 @@ void DetectGloriousGMMK2(hid_device_info* info, const std::string& /*name*/)
         }
 
         GloriousGMMK2Controller* controller = new GloriousGMMK2Controller(feature_dev, output_dev, info->path);
-        RGBController_GloriousGMMK2* rgb_controller = new RGBController_GloriousGMMK2(controller);
+        RGBController_GloriousGMMK2* rgb_controller = new RGBController_GloriousGMMK2(controller, layout);
 
         ResourceManager::get()->RegisterRGBController(rgb_controller);
     }
 }
 
 REGISTER_HID_DETECTOR_PU("Glorious GMMK2 65% (ANSI)", DetectGloriousGMMK2, GLORIOUS_VID, GLORIOUS_GMMK2_65_ANSI_PID, GLORIOUS_GMMK2_FEATURE_USAGE_PAGE, GLORIOUS_GMMK2_FEATURE_USAGE);
+REGISTER_HID_DETECTOR_PU("Glorious GMMK2 65% (ISO)",  DetectGloriousGMMK2, GLORIOUS_VID, GLORIOUS_GMMK2_65_ISO_PID,  GLORIOUS_GMMK2_FEATURE_USAGE_PAGE, GLORIOUS_GMMK2_FEATURE_USAGE);
