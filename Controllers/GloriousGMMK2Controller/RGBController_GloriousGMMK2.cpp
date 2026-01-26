@@ -267,7 +267,7 @@ void RGBController_GloriousGMMK2::SetupZones()
     }
 
     zone underglow_zone;
-    underglow_zone.name               = ZONE_EN_UNDERGLOW;
+    underglow_zone.name               = "Underglow";
     underglow_zone.type               = ZONE_TYPE_MATRIX;
     underglow_zone.leds_min           = underglow_count;
     underglow_zone.leds_max           = underglow_count;
