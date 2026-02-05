@@ -12,6 +12,7 @@
 #include <cstring>
 #include "NetworkClient.h"
 #include "RGBController_Network.h"
+#include "LogManager.h"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -243,7 +244,7 @@ void NetworkClient::ConnectionThreadFunction()
             if(port.tcp_client_connect() == true)
             {
                 client_sock = port.sock;
-                printf( "Connected to server\n" );
+                LOG_INFO("Connected to server");
 
                 /*---------------------------------------------------------*\
                 | Server is now connected                                   |
@@ -267,7 +268,7 @@ void NetworkClient::ConnectionThreadFunction()
             }
             else
             {
-                printf( "Connection attempt failed\n" );
+                LOG_WARNING("Connection attempt failed");
             }
         }
 
@@ -363,7 +364,7 @@ void NetworkClient::ConnectionThreadFunction()
                         {
                             if(!controller_data_requested)
                             {
-                                printf("Client: Requesting controller %d\r\n", requested_controllers);
+                                LOG_VERBOSE("Client: Requesting controller %d", requested_controllers);
 
                                 controller_data_received = false;
                                 SendRequest_ControllerData(requested_controllers);
@@ -385,7 +386,7 @@ void NetworkClient::ConnectionThreadFunction()
                             | All controllers received, add them to     |
                             | master list                               |
                             \*-----------------------------------------*/
-                            printf("Client: All controllers received, adding them to master list\r\n");
+                            LOG_VERBOSE("Client: All controllers received, adding them to master list");
                             for(std::size_t controller_idx = 0; controller_idx < server_controllers.size(); controller_idx++)
                             {
                                 controllers.push_back(server_controllers[controller_idx]);
@@ -460,7 +461,7 @@ int NetworkClient::recv_select(SOCKET s, char *buf, int len, int flags)
 
 void NetworkClient::ListenThreadFunction()
 {
-    printf("Network client listener started\n");
+    LOG_VERBOSE("Network client listener started");
 
     /*---------------------------------------------------------*\
     | This thread handles messages received from the server     |
@@ -563,7 +564,7 @@ void NetworkClient::ListenThreadFunction()
     }
 
 listen_done:
-    printf( "Client socket has been closed");
+    LOG_INFO("Client socket has been closed");
     client_string_sent                  = false;
     controller_data_requested           = false;
     controller_data_received            = false;
@@ -630,7 +631,7 @@ void NetworkClient::ProcessReply_ControllerCount(unsigned int data_size, char * 
         requested_controllers               = 0;
         controller_data_requested           = false;
 
-        printf("Client: Received controller count from server: %d\r\n", server_controller_count);
+        LOG_VERBOSE("Client: Received controller count from server: %d", server_controller_count);
     }
 }
 
